@@ -1,10 +1,9 @@
 {
   "name": "wallet",
-  "version": "1.0.0",
+  "version": "0.8.0",
   "description": "wallet ",
   "main": "main.js",
   "scripts": {
-    "package": "electron-packager ../desktopApp wanchan-Wallet --darwin --out ../outApp --version 0.0.8 --overwrite ",
     "start": "electron ."
   },
   "keywords": [
