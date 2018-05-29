@@ -16,7 +16,6 @@ var hex = require('./lib/js-crypto/src/hex');
 var rlp = require('rlp');
 var secp256k1 = require('secp256k1');
 var sha256 = require("sha256");
-var httpModule = require("./lib/http.js");
 var request = require('request');
 var request_json = require('request-json');
 var nacl;
@@ -49,12 +48,14 @@ function broadcastTx(type,rawTx){
     var url =  server + 'broadcast_tx_commit?tx=0x' + opCode + rawTx;
     console.log(url);
     return new promise(function(resolve,reject){
-        httpModule.get(url,function(data){
-            console.log(data);
-            resolve(data.result.data);
-        },function(err){
-            console.log(err);
-            reject(err);
+        request(url,function(error,response,body){
+            if(error){
+                console.log("err:",error);
+                reject(error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody.result.data);
         });
     })
 }
@@ -63,12 +64,14 @@ function contractQuery(rawTx){
     var url =  server + 'query_contract?tx=0x' + rawTx;
     console.log(url);
     return new promise(function(resolve,reject){
-        httpModule.get(url,function(data){
-            console.log(data);
-            resolve(data);
-        },function(err){
-            console.log(err);
-            reject(err);
+        request(url,function(error,response,body){
+            if(error){
+                console.log("err:",error);
+                reject(error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody);
         });
     })
 }
@@ -115,12 +118,14 @@ obj.getBalance = function(pubKey){
     return new promise(function(resolve,reject){
         var url =  server + 'query_share?pubkey=0x' + pubKey;
         console.log(url);
-        httpModule.get(url,function(data){
-            console.log(data);
-            resolve(data.result);
-        },function(err){
-            console.log(err + functionName);
-            reject(err + functionName);
+        request(url,function(error,response,body){
+            if(error){
+                console.log("err:",error);
+                reject(error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody.result);
         });
     });
 }
@@ -130,12 +135,14 @@ obj.getEthBalance = function(addr){
         console.log(addr);
         var url =  server + 'query_balance?address=' + addr;
         console.log(url);
-        httpModule.get(url,function(data){
-            console.log(data);
-            resolve(data.result.balance);
-        },function(err){
-            console.log(err + functionName);
-            reject(err + functionName);
+        request(url,function(error,response,body){
+            if(error){
+                console.log("err:",error);
+                reject(error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody.result.balance);
         });
     })
 }
@@ -145,12 +152,14 @@ obj.getNonce = function(addr){
         return new promise(function(resolve,reject){
             var url =  server + 'query_nonce?address=' + addr;
             console.log(url);
-            httpModule.get(url,function(data){
-                console.log(data);
-                resolve(data.result.nonce);
-            },function(err){
-                console.log(err + functionName);
-                reject(err + functionName);
+            request(url,function(error,response,body){
+                if(error){
+                    console.log("err:",error);
+                    reject(error);
+                }
+                var JSONbody = JSON.parse(body)
+                console.log(JSONbody);
+                resolve(JSONbody.result.nonce);
             });
         });
 }
@@ -159,13 +168,15 @@ obj.getValidatorsNum = function(){
     return new promise(function(resolve,reject){
         var url =  server + 'validators';
         console.log(url);
-            httpModule.get(url,function(data){
-                console.log(data);
-                resolve(data.result.validators);
-            },function(err){
-                console.log(err + functionName);
-                reject(err + functionName);
-            });
+        request(url,function(error,response,body){
+            if(error){
+                console.log("err:",error);
+                reject(error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody.result.validators);
+        });
     })
 }
 
@@ -428,13 +439,21 @@ obj.getBlockInfo = function(blockNumber){
         if(!blockNumber) blockNumber = 0;
         var url =  server + 'block?height='+ blockNumber;
         console.log(url);
-        httpModule.get(url,function(data){
-            console.log(data);
-            resolve(data);
-        },function(err){
-            console.log(err);
-            reject(err);
-        });
+        request(url,function(error, response, body){
+            if(error){
+                console.log("err:",error);
+            }
+            var JSONbody = JSON.parse(body)
+            console.log(JSONbody);
+            resolve(JSONbody);
+        })
+        // httpModule.get(url,function(data){
+        //     console.log(data);
+        //     resolve(data);
+        // },function(err){
+        //     console.log(err);
+        //     reject(err);
+        // });
     });
 }
 

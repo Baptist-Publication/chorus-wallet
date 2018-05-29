@@ -74,7 +74,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
 
     $scope.initPage();
      /**  初始化页面数据 ------------end------------- **/
-    $scope.ipList = ["http://10.253.105.196:46657/", "http://10.253.169.129:30001/"];
+    $scope.ipList = ["http://10.253.105.196:46657/", "http://10.253.169.129:30001/","http://101.132.104.7:46657/"];
     /**  新账户   ------------start------------- **/
     $scope.newAccountArea = false; //控制新账户详情的显示
     $scope.showAccountArea =true;
@@ -630,7 +630,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
                         $scope.getEthAccountInfo();
                         //console.log(data);
-                        alert("交易成功！\n Txhash:"+"0x"+data);
+                        alert("交易已提交！\n Txhash:0x"+data);
                         $scope.showEthTransferFlag = false;
                         $scope.showEthAccountArea = true;
                         ethtransferObj = {};
@@ -767,7 +767,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.txTranfer(ethaddr,ethpri,pri,fromAddr,toAddr,value,nonce,gas,gasPrice).then(function(data){
                 $scope.getEthAccountInfo();
                 //console.log(data);
-                alert("交易成功！\n Txhash:"+data);
+                alert("交易已提交！\n Txhash:0x"+data);
                 $scope.showTransferFlag = false;
                 $scope.showAccountArea = true;
             }).then().catch(function(data){
@@ -798,7 +798,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
                 $scope.getEthAccountInfo();
                 console.log(data);
-                alert("交易成功！\n Txhash:"+"0x"+data.txhash);
+                alert("交易已提交！\n Txhash:"+"0x"+data.txhash);
                 $scope.showEthTransferFlag = false;
                 $scope.showEthAccountArea = true;
                 ethtransferObj = {};
@@ -831,9 +831,9 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
                 $scope.getEthAccountInfo();
                 console.log(data);
-                //alert("交易成功！\n Txhash:"+data.txhash);
+                //alert("交易已提交！\n Txhash:"+data.txhash);
                 //var txhash = data.txhash；
-                console.log("交易成功！\n Txhash:"+data.txhash);
+                console.log("交易已提交！\n Txhash:"+data.txhash);
                 $scope.showTransferFlag = false;
                 $scope.showAccountArea = true;
                 return C.getContractAddress(fromAddr,nonce);
@@ -890,7 +890,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
                 $scope.getEthAccountInfo();
                 //console.log(data);
-                alert("交易成功！\n Txhash:"+data);
+                alert("交易已提交！\n Txhash:0x"+data);
             }).then().catch(function(data){
                 console.log(data);
                 alert("交易失败。",data);  
@@ -926,7 +926,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
                 $scope.getEthAccountInfo();
                 //console.log(data);
-                alert("交易成功！\n Txhash:"+data);
+                alert("交易已提交！\n Txhash:0x"+data);
             }).then().catch(function(data){
                 console.log(data);
                 alert("交易失败。",data);  
