@@ -74,11 +74,18 @@ app.controller('myCtrl',function($scope,$http,$timeout){
 
     $scope.initPage();
      /**  初始化页面数据 ------------end------------- **/
-
+    $scope.ipList = ["http://10.253.105.196:46657/", "http://10.253.169.129:30001/"];
     /**  新账户   ------------start------------- **/
     $scope.newAccountArea = false; //控制新账户详情的显示
     $scope.showAccountArea =true;
     $scope.showEthAccountArea =true;  
+
+    $scope.setIp = function(){
+        C.setIp($scope.newIp);
+        alert("网络配置成功");
+        jQuery('.popup').hide();
+        jQuery('.mainContent').show();
+    }
 
     $scope.createAccount = function(){
         if($scope.accountPwd == ""){
@@ -649,111 +656,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
      $scope.sentParams = new Array();
      $scope.params = new Array(); //初始化首页合约函数参数
      $scope.conf = [];
-  //    $scope.getValueByArgs = function(){
-
-  //       console.log($scope.conf);
-  //       var outputArr = $scope.getFunObj.outputs;
-
-  //       C.getValByInputs($scope.getFunObj.name,C.toJSON($scope.newContract.ABI),$scope.newContract.address,$scope.conf,function(data){
-            
-  //           if(outputArr.length > 1){
-  //               $scope.getVal = new Array();
-  //               var result = new Array();
-  //               $scope.getValType = C.getVarType(data);
-  //               for(var i=0;i<data.length;i++){
-  //                   var temItem = data[i];
-  //                   if(outputArr[i].type.indexOf("uint") > -1){
-  //                       temItem = Number(temItem);
-  //                   }else{
-  //                       if(C.isJSON(temItem)) temItem = C.toJSON(temItem);
-  //                   }
-  //                   result.push(temItem);
-  //               }
-  //               $scope.getVal = result;
-
-  //           }else{
-  //               $scope.getVal = "";
-  //               if(outputArr[0].type.indexOf("uint") > -1){
-  //                   data = Number(data);
-  //               }else{
-  //                   if(C.isJSON(data)) data = C.toJSON(data);
-  //               }
-  //               $scope.getValType = C.getVarType(data);
-  //               console.log($scope.getValType);
-  //               $scope.getVal = data;
-  //           }
-  //           $scope.$apply();
-  //       });
-  //    }
-
-  //    //首页函数调用
-  //    $scope.getValueByArgsHome = function(){
-
-  //       console.log($scope.params);
-  //       var outputArr = $scope.getFunObjHome.outputs;
-
-  //       C.getValByInputs($scope.getFunObjHome.name,C.toJSON($scope.contractObjHome.abi),$scope.contractObjHome.address,$scope.params,function(data){
-            
-  //           if(outputArr.length > 1){
-  //               $scope.getVal = new Array();
-  //               var result = new Array();
-  //               $scope.getValTypeHome = C.getVarType(data);
-  //               for(var i=0;i<data.length;i++){
-  //                   var temItem = data[i];
-  //                   if(outputArr[i].type.indexOf("uint") > -1){
-  //                       temItem = Number(temItem);
-  //                   }else{
-  //                       if(C.isJSON(temItem)) temItem = C.toJSON(temItem);
-  //                   }
-  //                   result.push(temItem);
-  //               }
-  //               $scope.getValHome = result;
-
-  //           }else{
-  //               $scope.getValHome = "";
-  //               if(outputArr[0].type.indexOf("uint") > -1){
-  //                   data = Number(data);
-  //               }else{
-  //                   if(C.isJSON(data)) data = C.toJSON(data);
-  //               }
-  //               $scope.getValTypeHome = C.getVarType(data);
-  //               $scope.getValHome = data;
-  //           }
-  //           $scope.$apply();
-  //       });
-  //    }
-
-  //     /**  根据参数获取返回值  ------------end-------------  **/
-
-  //     /**  根据参数配置交易data、发送  ------------start-------------  **/
-  //     $scope.setValueByInputsHome = function(){
-  //       console.log($scope.params);
-  //       var data = C.getPayLoad(C.toJSON($scope.contractObjHome.abi),$scope.sentFunObjHome.name,$scope.params);
-  //       var Addr = $scope.currentAccountAddr.address;
-  //       var Pwd = $scope.currentAccountAddr.passphrase;
-  //       console.log(Addr);
-  //       //var addr = Addr.replace("0x","");
-		// var addr = Addr;//0x missing
-  //       console.log(addr);
-  //       //console.log(addrRaw);
-  //       //var Addr = addrRaw.replace("0x","");
-  //       //console.log(Addr);
-  //       //var addr = ethUtil.addHexPrefix(addrRaw);
-  //       if($scope.inputPwd == Pwd){
-  //       var pri = CryptoJS.AES.decrypt($scope.currentAccountAddr.private,$scope.inputPwd).toString(CryptoJS.enc.Utf8);
-  //       //console.log(pri);
-  //       C.sendTxUsePrivateKey(data,pri,addr,$scope.contractObjHome.address);
-  //       console.log("成功");
-  //       //alert('交易提交成功');
-        
-  //           }else{
-  //               alert("输入的密码不正确，请重新输入。");
-  //               console.log("失败");
-
-  //           }
-
-  //     }
-    /**  根据参数配置交易data、发送  ------------end-------------  **/
 
       /**   保存合约 ------------start-------------  **/
        $scope.saveContract = function(){
@@ -948,6 +850,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     alert('保存成功');
                     $scope.showDeployArea = false;
                     $scope.showContractArea = true;
+                    $scope.depContract = "";
                     //$('#contractShow').modal('hide');
                     //$scope.hideWatch();
                 }
@@ -1049,63 +952,9 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     /**   取得发送出的总额 ------------end-------------  **/
 
     // /**   控制台 ------------start-------------  **/
-    // $scope.myKeyup = function(e){
-    //     var keycode = window.event?e.keyCode:e.which; 
-    //         if(keycode==13){
-    //             runCmd($scope.inputCmd);
-    //         }
-    // };
-
-    // function runCmd(cmd){
-    //     if(cmd == 'clear'){
-    //         var myDate = new Date();
-    //         var mytime = myDate.toLocaleTimeString();
-    //         var ta = document.getElementById('responseText');
-    //         ta.value = mytime + '  ' + C.cmdWord();
-    //         $scope.inputCmd = "";
-    //     }else if(cmd == ''){
-    //         console.log('输入为空！');
-    //     }else{
-    //         var myDate = new Date();
-    //         var mytime = myDate.toLocaleTimeString();
-    //         var ta = document.getElementById('responseText');
-    //         ta.value = ta.value + '\n' + mytime + '  ' + cmd;
-    //         ta.scrollTop = ta.scrollHeight;
-    //         $scope.inputCmd = "";
-    //         arr=cmd.split(" ");
-    //         console.log(arr);
-    //         C.executeCmd(arr).then(function(data){
-    //             var date = new Date();
-    //             var time = date.toLocaleTimeString();
-    //             ta.value = ta.value + '\n' + time + '\n' + '  ' + data;
-    //             ta.scrollTop = ta.scrollHeight;
-    //         })
-    //     } 
-    // }
     // /**   控制台 ------------end-------------  **/
 
     // /**   编译合约 ------------start-------------  **/
-    // $scope.compileContract = function(){
-    //     $scope.contractsList = new Array();
-    //     C.contract($scope.solidityCode).then(function(data){
-    //         alert('合约编译成功！');
-    //         console.log('in testTextarea',data);
-    //         $scope.showSelectContract = true;
-    //         $scope.showCompileResult = false;
-    //         $scope.showButton = false;
-    //         $scope.cpcontract = data;
-    //         var contracts = data.contracts;
-    //         var contractsArr = [];
-    //         var i = 0;
-    //         for (var item in contracts) {
-    //             contractsArr[i] = item;
-    //             i++;
-    //         }
-    //         //console.log(contractsArr);
-    //         $scope.contractsList = contractsArr;
-    //         $scope.refresh();
-    //     });
-    // }
     // /**   编译合约 ------------end-------------  **/
 
     /**   选择编译后的合约 ------------start-------------  **/
@@ -1130,6 +979,11 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     
     $scope.showNewAccount = function () {
         jQuery('.newAccount').show();
+        jQuery('.mainContent').hide();
+    }
+
+    $scope.showServerSet = function () {
+        jQuery('.ServerSet').show();
         jQuery('.mainContent').hide();
     }
 
@@ -1174,6 +1028,8 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             $scope.funAreaQuery = true;
             $scope.funAreaTrade = false;
             $scope.funcInputs = 0;
+            $scope.sentParams = new Array();
+            $scope.inputPwd = "";
             if($scope.getFunObj)
                 $scope.selectGetfun();
         }else{
@@ -1187,6 +1043,8 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             $scope.funAreaTrade = true;
             $scope.funAreaQuery = false;
             $scope.funcInputs = 0;
+            $scope.getParams = new Array();
+            $scope.queryResultArea = false;
             if($scope.sentFunObj)  
                 $scope.selectSentfun();
         }else{

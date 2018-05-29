@@ -16,6 +16,7 @@ var hex = require('./lib/js-crypto/src/hex');
 var rlp = require('rlp');
 var secp256k1 = require('secp256k1');
 var sha256 = require("sha256");
+var httpModule = require("./lib/http.js");
 var request = require('request');
 var request_json = require('request-json');
 var nacl;
@@ -23,9 +24,9 @@ require("js-nacl").instantiate(function (nacl_instance){
     nacl = nacl_instance;
 })
 
-//var server = "http://10.253.105.196:46657/"
-var server = "http://10.253.169.129:30001/";//老干
-var httpModule = require("./lib/http.js");
+global.server = "http://10.253.105.196:46657/";
+//server list = "http://10.253.105.196:46657/"
+//server list = "http://10.253.169.129:30001/";//老干
 var client = request_json.createClient(server);  
 
 var obj = {};
@@ -70,6 +71,10 @@ function contractQuery(rawTx){
             reject(err);
         });
     })
+}
+
+obj.setIp = function(ip){
+    global.server = ip;
 }
 
 obj.getContractPayload = function(params,abi){

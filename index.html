@@ -30,7 +30,7 @@
                         <button class="btn btn-primary" ng-click="showNewAccount()"><i class="icon-plus"></i>添加账户</button>
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-primary" ng-click="testTest()"><i class="icon-plus"></i>测试</button>
+                        <button class="btn btn-primary" ng-click="showServerSet()"><i class="icon-plus"></i>网络设置</button>
                     </div>
                     <!-- <div class="col-md-6 col-sm-6 col-xs-6">
                         <button class="btn btn-primary" ng-click="showNewAsset()"><i class="icon-plus"></i>新增合约</button>
@@ -55,6 +55,21 @@
                         </div>
                     </form>
 
+                </div>
+            </div>
+            <div class="popup ServerSet">
+                <button class="btn btn-warning bitMarginBottom" ng-click="hidePop()"><i class="icon-reply"></i>返回</button>
+                <div class="clearfix"></div>
+                <div class="content">
+                    <div class="input-group input-group-lg">
+                        <span class="input-group-addon">节点地址</span>
+                        <input type="text" class="form-control" ng-model="newIp" placeholder="请输入网络节点地址，包括端口号,例如:http://localhost:46657">
+                        <select  ng-model='newIp' class="form-control" ng-options='item for item in ipList'>
+                        </select>
+                    </div>
+                    <div class="text-center marginTop20">
+                        <button class="btn btn-primary" ng-click="setIp()">设置IP</button>
+                    </div>
                 </div>
             </div>
             <div class="popup newAccount">
@@ -234,7 +249,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="myModalLabel" >合约解析结果</h4>
                 </div>
-                <div class="modal-body">
+                <!-- <div class="modal-body">
                     <div class='panel panel-default'>
                         <div class='panel-heading'>
                             合约函数(get)
@@ -254,9 +269,9 @@
                              <select  ng-model='sentFunObj' class="form-control" ng-options='obj.name for obj in sentFunList' ng-change="selectSentfun()">
                             </select>
                         </div>
-                    </div>
+                    </div> -->
 
-                    <div class='panel panel-default' ng-show="inputs.length > 0">
+                    <!-- <div class='panel panel-default' ng-show="inputs.length > 0">
                         <div class='panel-heading'>
                             函数参数(get)
                         </div>
@@ -294,7 +309,7 @@
                                 <p ng-bind="getVal" class="padding10"></p>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" ng-click="saveContract()">保存合约</button>
@@ -304,7 +319,6 @@
     </div>
     <script>
         window.$ = window.jQuery = require('./public/js/lib/jquery-2.1.4.min.js')
-        //require('./public/js/lib/ethereumjs-accounts.js');
         require('./public/js/lib/angular.min.js');
         require('./public/js/lib/bootstrap.min.js');
         require('./public/js/menu.js');
