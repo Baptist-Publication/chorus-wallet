@@ -54,6 +54,8 @@ $(function () {
             scope.getBlockLoop();
         }else{
             clearInterval(scope.blockLoopFlag);
+            scope.showqueryBlockInfo = false;
+            scope.showTxInfo = false;
         }
 
     });

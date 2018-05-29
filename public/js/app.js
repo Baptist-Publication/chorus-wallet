@@ -1241,7 +1241,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     $scope.getBlockLoop = function(){
         $scope.blockLoopFlag = setInterval(function(){
             $scope.getInfoBlock();
-            //$scope.getValidatorsNum();
         },1000);
     }
 
@@ -1250,8 +1249,10 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         C.getBlockInfo(0).then(function(data){
             console.log("in getInfoBlock");
             console.log(data);
+            var blockTime = new Date(data.result.block.header.time/1000000);
+            blockTime = blockTime.toString();
             $scope.infoBlock = data;
-            $scope.infoBlock.time = new Date(data.result.block.header.time/1000000);
+            $scope.infoBlock.time = blockTime.slice(0,25);
             return C.getValidatorsNum();
         }).then(function(data){
             $scope.infoBlock.validators = data;
