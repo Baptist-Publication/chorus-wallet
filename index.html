@@ -63,9 +63,9 @@
                 <div class="content">
                     <div class="input-group input-group-lg">
                         <span class="input-group-addon">节点地址</span>
-                        <input type="text" class="form-control" ng-model="newIp" placeholder="请输入网络节点地址，包括端口号,例如:http://localhost:46657">
-                        <select  ng-model='newIp' class="form-control" ng-options='item for item in ipList'>
-                        </select>
+                        <input type="text" class="form-control" ng-model="newIp.server" placeholder="请输入网络节点地址，包括端口号,例如:http://localhost:46657">
+                        <!-- <select  ng-model='newIp' class="form-control" ng-options='item for item in ipList'></select> -->
+                        <select  ng-model='newIp' class="form-control" ng-options='obj.name for obj in ipList'></select>
                     </div>
                     <div class="text-center marginTop20">
                         <button class="btn btn-primary" ng-click="setIp()">设置IP</button>

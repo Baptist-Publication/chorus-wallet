@@ -74,14 +74,15 @@ app.controller('myCtrl',function($scope,$http,$timeout){
 
     $scope.initPage();
      /**  初始化页面数据 ------------end------------- **/
-    $scope.ipList = ["http://10.253.105.196:46657/", "http://10.253.169.129:30001/","http://101.132.104.7:46657/"];
+    //$scope.ipList = ["http://10.253.105.196:46657/", "http://10.253.169.129:30001/","http://101.132.104.7:46657/"];
+    $scope.ipList = [{"name":"testnet01","server":"http://10.253.105.196:46657/"},{"name":"testnet02","server":"http://10.253.169.129:30001/"},{"name":"mainnet","server":"http://101.132.104.7:46657/"}];
     /**  新账户   ------------start------------- **/
     $scope.newAccountArea = false; //控制新账户详情的显示
     $scope.showAccountArea =true;
     $scope.showEthAccountArea =true;  
 
     $scope.setIp = function(){
-        C.setIp($scope.newIp);
+        C.setIp($scope.newIp.server);
         alert("网络配置成功");
         jQuery('.popup').hide();
         jQuery('.mainContent').show();
@@ -444,6 +445,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     $scope.queryResult = data.result.result.data;
                     var outputType = $scope.getFunObj.outputs[0].type;
                     console.log(outputType);
+                    console.log(data.result.result.data);
                     $scope.getEthAccountInfo();
                     if(outputType == "uint256" || outputType == "uint8"){
                         $scope.queryResult = parseInt($scope.queryResult,16);
@@ -459,7 +461,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     }
                 }).then().catch(function(data){
                     console.log(data);
-                    alert("交易失败。",data);  
+                    //alert("交易失败。",data);  
                 })
             });
         }else{
@@ -506,7 +508,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     }
                 }).then().catch(function(data){
                     console.log(data);
-                    alert("交易失败。",data);  
+                    //alert("交易失败。",data);  
                 })
             });
         }
@@ -592,7 +594,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                         ethtransferObj = {};
                     }).then().catch(function(data){
                         console.log(data);
-                        alert("交易失败。",data);  
+                        //alert("交易失败。",data);  
                     })}else{
                         alert("输入的密码不正确，请重新输入。");
                         console.log("密码错误❌失败");
@@ -636,7 +638,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                         ethtransferObj = {};
                     }).then().catch(function(data){
                         console.log(data);
-                        alert("交易失败。",data);  
+                        //alert("交易失败。",data);  
                     })}else{
                         alert("输入的密码不正确，请重新输入。");
                         console.log("密码错误❌失败");
