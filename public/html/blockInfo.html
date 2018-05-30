@@ -1,5 +1,5 @@
 <template class="task-template">
-	<div class="">
+	<div class="blockInfo">
 		<h4 class='text-center bitMarginBottom'>区块链浏览器</h4>
 		<div class="row noMargin marginBottom20 blockInfoShow">
 			<div class="col-md-3 col-sm-3 col-xs-3 infoBlock text-center" style="margin-bottom:3px;">
@@ -12,14 +12,30 @@
 			</div>
 			<div class="col-md-3 col-sm-3 col-xs-3 infoBlock text-center">
 				<p > <i class="icon icon-bar-chart"></i>验证者</p>
-				<p ><span ng-bind="infoBlock.validators.length"></span></p>
+				<button class="btn btn-warning bitMarginBottom" ng-bind="infoBlock.validators.length" ng-click="showValidatorsArea()"><i class="icon-reply"></i></button>
 			</div>
 			<div class="col-md-3 col-sm-3 col-xs-3 infoBlock text-center">
 				<p > <i class="icon icon-sitemap"></i>交易数</p>
 				<p ><span ng-bind="infoBlock.result.block.data.txs.length"></span></p>
 			</div>
 		</div>
-		<div class='panel panel-primary'>
+		<div class='panel panel-primary' ng-show='validatorsArea'>
+			<h5 class='text-center bitMarginBottom'>验证者节点信息</h5>
+			<table class='table table-bordered text-center'>
+				<tr>
+				<th>No.</th><th>address</th><th>pub_key</th><th>voting_power</th><th>accum</th><th>is_ca</th>
+				</tr>
+				<tr ng-repeat="(key,val) in infoBlock.validators">
+					<td ng-bind="key"></td>
+					<td ng-bind='val.address'></td>
+					<td ng-bind='val.pub_key[1]'></td>
+					<td ng-bind='val.voting_power'></td>
+					<td ng-bind='val.accum'></td>
+					<td ng-bind='val.is_ca'></td>
+				</tr>
+			</table>
+		</div>
+		<div class='panel panel-primary' ng-show='infoArea'>
 			<div class="panel-heading">
 	            <form class="form-horizontal formArea ">
 	                <div class="input-group input-group-lg noPadding" style="font-size:16px;">
@@ -89,7 +105,7 @@
 				            <span class="label label-info" ng-bind="txHash"></span>
 				        </div>
 				    </div>
-				    <h4 class='bitMarginBottom'>交易详情</h4>  
+				    <h5 class='bitMarginBottom'>交易详情</h5>  
 				     <div class="panel-body" ng-show="showTxInfo">
 				     	<table class='table table-bordered text-center'>
 				     		<tr ng-repeat="(key,val) in txInfoObj">
@@ -98,11 +114,10 @@
 							<tr ng-repeat="(key,val) in txInfoPayload">
 								<td ng-bind="key"></td><td ng-bind='val'></td>
 							</tr>
-				     	</div>
-				     </div> 
-				</div>
-	        </div>
-		</div>
-
+						</table>
+					</div>
+				</div> 
+			</div>
+	    </div>
 	</div>		
 </template>

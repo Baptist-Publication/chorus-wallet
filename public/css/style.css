@@ -486,9 +486,9 @@ body {
   margin:auto 0;
 }
 .blockInfoShow .infoBlock {
-  border-top: 1px solid #0000ff;
-  border-bottom: 1px solid #0000ff;
-  border-left: 1px solid #0000ff;
+  border-top: 1px solid #f8f8f8;
+  border-bottom: 1px solid #f8f8f8;
+  border-left: 1px solid #f8f8f8;
 }
 .blockInfoShow .infoBlock p {
   line-height: 30px;
@@ -498,7 +498,7 @@ body {
   border-bottom-left-radius: 5px;
 }
 .blockInfoShow .infoBlock:last-child {
-  border-right: 1px solid #0000ff;
+  border-right: 1px solid #f8f8f8;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }

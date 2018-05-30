@@ -23,7 +23,7 @@ require("js-nacl").instantiate(function (nacl_instance){
     nacl = nacl_instance;
 })
 
-global.server = "http://10.253.105.196:46657/";
+global.server = "http://101.132.104.7:46657/";
 //server list = "http://10.253.105.196:46657/"
 //server list = "http://10.253.169.129:30001/";//老干
 var client = request_json.createClient(server);  
@@ -164,7 +164,7 @@ obj.getNonce = function(addr){
         });
 }
 
-obj.getValidatorsNum = function(){
+obj.getValidators = function(){
     return new promise(function(resolve,reject){
         var url =  server + 'validators';
         console.log(url);

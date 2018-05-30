@@ -37,6 +37,10 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             $scope.data = data;
         },0);
     }
+    $scope.showContractArea = true;
+    $scope.blockInfoArea = true;
+    $scope.infoArea = true;
+    $scope.validatorsSwitch = 1;
 
     $scope.accountList = new Array();
     $scope.EthaccountList = new Array();
@@ -304,8 +308,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     /**  我的账户 ------------end------------- **/
 
     /**  合约 ------------start------------- **/
-    $scope.showContractArea = true;
-
     /**  合约 ------------end------------- **/
 
     /**  解析合约ABI ------------start-------------  **/
@@ -1002,7 +1004,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         }else if (type == 2){
             $scope.accountSwitch = false;
         }
-
+    
     }
 
     //$scope.SelectMode = false;
@@ -1016,7 +1018,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     }
 
     $scope.showBalanceInMainPage = function(type){
-
         if(type == 1){
             $scope.showBalance = true;
         }else{
@@ -1025,7 +1026,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     }
 
     $scope.showfunAreaQuery = function (type){
-
         if (type ==1){
             $scope.funAreaQuery = true;
             $scope.funAreaTrade = false;
@@ -1040,7 +1040,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     }
 
     $scope.showfunAreaTrade = function (type){
-
         if (type ==1){
             $scope.funAreaTrade = true;
             $scope.funAreaQuery = false;
@@ -1190,6 +1189,16 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         }
     }
 
+    $scope.showValidatorsArea = function(){
+        $scope.validatorsSwitch += 1;
+        console.log($scope.infoBlock.validators);
+        if($scope.validatorsSwitch%2==0){
+            $scope.validatorsArea = true;
+        }else{
+            $scope.validatorsArea = false;
+        }
+    }
+
     $scope.backToTypeChoice = function(){
         $scope.showWatchArea = true;
         $scope.showEnterContractDetailsArea = false;
@@ -1255,7 +1264,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             blockTime = blockTime.toString();
             $scope.infoBlock = data;
             $scope.infoBlock.time = blockTime.slice(0,25);
-            return C.getValidatorsNum();
+            return C.getValidators();
         }).then(function(data){
             $scope.infoBlock.validators = data;
             $scope.showBlockInfo = true;
