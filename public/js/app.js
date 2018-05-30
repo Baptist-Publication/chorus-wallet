@@ -41,6 +41,8 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     $scope.blockInfoArea = true;
     $scope.infoArea = true;
     $scope.validatorsSwitch = 1;
+    $scope.contractQuery = 1;
+    $scope.contractExec = 1;
 
     $scope.accountList = new Array();
     $scope.EthaccountList = new Array();
@@ -98,40 +100,50 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         }else if($scope.accountPwd.length < 6){
             alert('密码长度不足6位');
         }else{
+            var Accounts = new ethAccounts();
+            var newAccount = Accounts.new($scope.ethAccountPwd);
+            var getAccount = Accounts.get(newAccount.address,$scope.ethAccountPwd);
+            console.log(newAccount);
+            console.log(getAccount);
 
             var usrinfoArray = new Array();
 
-            C.genKeypair($scope.accountPwd).then(function(kp){
-                console.log(kp);
-                var privKey_encrypt = CryptoJS.AES.encrypt(kp.privkey,$scope.accountPwd).toString();
-                sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(42),privKey char(128),passphrase char)").then(function (data) {
-                    if(data.result == "success")
-                        return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?)",[kp.pubkey,privKey_encrypt,$scope.accountPwd]);
-                }).then(function (data){
-                    console.log(data);
-                    if(data.result == "success"){
-                        console.log("in success");
+            C.genKeypair($scope.accountPwd).then(function(kp_ed){
+                //console.log(kp_ed);
+                var privKey_ed_encrypt = CryptoJS.AES.encrypt(kp_ed.privkey,$scope.accountPwd).toString();
+                global.kp_ed = kp_ed;
+                global.privKey_ed_encrypt = privKey_ed_encrypt;
+                return sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42))")
+            }).then(function(data){
+                if(data.result == "success")
+                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?)",[kp_ed.pubkey,privKey_ed_encrypt,newAccount.address]);
+            }).then(function(data){
+                if(data.result == "success")
+                    var privKey_secp_encrypt = CryptoJS.AES.encrypt(getAccount.private,$scope.accountPwd).toString();
+                    global.privKey_secp_encrypt = privKey_secp_encrypt;
+                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?)",[newAccount.address,privKey_secp_encrypt])
+            }).then(function(data){
+                if(data.result == "success")
+                    console.log("in success");
+                    var accountObj = {};
+                    accountObj.pubKey = kp_ed.pubkey;
+                    //console.log(account.pubKey);
+                    accountObj.chop_private = privKey_ed_encrypt;
+                    accountObj.choe_private = privKey_secp_encrypt;
+                    accountObj.relatedAddress = newAccount.address;
+                    accountObj.encrypt = true;
+                    accountObj.recoverPhrase = bip39.entropyToMnemonic(getAccount.private);
+                        
+                    $scope.newAccountObj = accountObj;
+                    console.log(accountObj);
 
-                        var newAccount = {};
-                        newAccount.pubKey = kp.pubkey;
-                        console.log(newAccount.pubKey);
-                        newAccount.private = privKey_encrypt;
-                        newAccount.encrypt = true;
-                        //newAccount.recoverPhrase = bip39.entropyToMnemonic(privKey_encrypt);
-
-                        $scope.newAccountObj = newAccount;
-                        console.log(newAccount);
-
-                        $scope.accountList.push(newAccount);
-                        $scope.newAccountArea = true;
-                        jQuery('#newAccountArea').show();
-                        jQuery('#newEthAccountArea').hide();
-                        console.log($scope.accountList);
-                        $scope.refresh();
-                    }     
-                }).then().catch(function (err) {
-                    console.log("err=", err);
-                });
+                    $scope.accountList.push(accountObj);
+                    $scope.EthaccountList.push(newAccount);                    
+                    $scope.newAccountArea = true;
+                    jQuery('#newAccountArea').show();
+                    jQuery('#newEthAccountArea').hide();
+                    console.log($scope.accountList);
+                    $scope.refresh();
             })
         }
     }
@@ -576,31 +588,27 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                 var toAddr = $scope.myContract.address;
                 var value = 0;
                 var inputPassphrase = $scope.inputPwd;
-                var Pwd = $scope.myEthAccountInfo.passphrase;
+                //var Pwd = $scope.myEthAccountInfo.passphrase;
                 var gas = 4100000;
                 var gasPrice = 1;
                 var nonce = +$scope.myEthAccountInfo.nonce;
                 var data = result;
 
-                if(inputPassphrase == Pwd){
-                    var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
-                    C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
-                        //console.log(data);
-                        $scope.getEthAccountInfo();
-                        alert("交易成功！\n Txhash:"+"0x"+data.txhash);
-                        console.log(data.result);
-                        $scope.getAccountInfo();
-                        $scope.refresh();
-                        $scope.showEthTransferFlag = false;
-                        $scope.showEthAccountArea = true;
-                        ethtransferObj = {};
-                    }).then().catch(function(data){
-                        console.log(data);
-                        //alert("交易失败。",data);  
-                    })}else{
-                        alert("输入的密码不正确，请重新输入。");
-                        console.log("密码错误❌失败");
-                    }
+                var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
+                C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
+                    //console.log(data);
+                    $scope.getEthAccountInfo();
+                    alert("交易成功！\n Txhash:"+"0x"+data.txhash);
+                    console.log(data.result);
+                    $scope.getAccountInfo();
+                    $scope.refresh();
+                    $scope.showEthTransferFlag = false;
+                    $scope.showEthAccountArea = true;
+                    ethtransferObj = {};
+                }).then().catch(function(data){
+                    console.log(data);
+                    //alert("交易失败。",data);  
+                })
             });
         }else{
             var data = {
@@ -623,28 +631,24 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                 var toAddr = $scope.myContract.address;
                 var value = 0;
                 var inputPassphrase = $scope.inputPwd;
-                var Pwd = $scope.myEthAccountInfo.passphrase;
+                //var Pwd = $scope.myEthAccountInfo.passphrase;
                 var gas = 4100000;
                 var gasPrice = 1;
                 var nonce = +$scope.myEthAccountInfo.nonce;
                 var data = result;
 
-                if(inputPassphrase == Pwd){
-                    var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
-                    C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
-                        $scope.getEthAccountInfo();
-                        //console.log(data);
-                        alert("交易已提交！\n Txhash:0x"+data);
-                        $scope.showEthTransferFlag = false;
-                        $scope.showEthAccountArea = true;
-                        ethtransferObj = {};
-                    }).then().catch(function(data){
-                        console.log(data);
-                        //alert("交易失败。",data);  
-                    })}else{
-                        alert("输入的密码不正确，请重新输入。");
-                        console.log("密码错误❌失败");
-                    }
+                var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
+                C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
+                    $scope.getEthAccountInfo();
+                    //console.log(data);
+                    alert("交易已提交！\n Txhash:0x"+data);
+                    $scope.showEthTransferFlag = false;
+                    $scope.showEthAccountArea = true;
+                    ethtransferObj = {};
+                }).then().catch(function(data){
+                    console.log(data);
+                    //alert("交易失败。",data);  
+                })
             });
         }
     }
@@ -711,7 +715,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         sqlite3Obj.execute(sqc).then(function (data){
             if (data.result == "success"){
                 alert("账户"+currentAddr+"已被删除");
-                $scope.myAccountInfo = null;
+                $scope.myEthAccountInfo = null;
                 $scope.initPage();
             }
         }).then().catch(function (data){
@@ -758,30 +762,30 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         var fromAddr = $scope.transferObj.from;
         var toAddr = $scope.transferObj.to;
         var value = +$scope.transferObj.amount;
-        var inputPassphrase = $scope.transferObj.password;
-        var inputEthPassphrase = $scope.transferObj.ethpassword;
-        var Pwd = $scope.myAccountInfo.passphrase;
+        if($scope.isAccountPair==true){
+            var inputPassphrase = $scope.transferObj.password;
+            var inputEthPassphrase = $scope.transferObj.password;
+        }else{
+            var inputPassphrase = $scope.transferObj.password;
+            var inputEthPassphrase = $scope.transferObj.ethpassword;
+        }
+        //var Pwd = $scope.myAccountInfo.passphrase;
         var gas = +$scope.transferObj.gas||212100;
         var gasPrice = +$scope.transferObj.gasPrice||1;
         var nonce = +$scope.myEthAccountInfo.nonce;
 
-        if(inputPassphrase == Pwd){
-            var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
-            var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
-            C.txTranfer(ethaddr,ethpri,pri,fromAddr,toAddr,value,nonce,gas,gasPrice).then(function(data){
-                $scope.getEthAccountInfo();
-                //console.log(data);
-                alert("交易已提交！\n Txhash:0x"+data);
-                $scope.showTransferFlag = false;
-                $scope.showAccountArea = true;
-            }).then().catch(function(data){
-                console.log(data);
-                alert("交易失败。",data);  
-            })}else{
-                alert("输入的密码不正确，请重新输入。");
-                console.log("密码错误❌失败");
-            }
-
+        var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
+        var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
+        C.txTranfer(ethaddr,ethpri,pri,fromAddr,toAddr,value,nonce,gas,gasPrice).then(function(data){
+            $scope.getEthAccountInfo();
+            //console.log(data);
+            alert("交易已提交！\n Txhash:0x"+data);
+            $scope.showTransferFlag = false;
+            $scope.showAccountArea = true;
+        }).then().catch(function(data){
+            console.log(data);
+            //alert("交易失败。",data);  
+        })
     }
 
     $scope.ethTransfer = function(){
@@ -791,28 +795,24 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         var toAddr = $scope.ethtransferObj.to;
         var value = +$scope.ethtransferObj.amount*1000000000;
         var inputPassphrase = $scope.ethtransferObj.password;
-        var Pwd = $scope.myEthAccountInfo.passphrase;
+        //var Pwd = $scope.myEthAccountInfo.passphrase;
         var gas = +$scope.ethtransferObj.gas||212100;
         var gasPrice = +$scope.ethtransferObj.gasPrice||1;
         var nonce = +$scope.myEthAccountInfo.nonce;
         var data = "0x"+$scope.ethtransferObj.data;
 
-        if(inputPassphrase == Pwd){
-            var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
-            C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
-                $scope.getEthAccountInfo();
-                console.log(data);
-                alert("交易已提交！\n Txhash:"+"0x"+data.txhash);
-                $scope.showEthTransferFlag = false;
-                $scope.showEthAccountArea = true;
-                ethtransferObj = {};
-            }).then().catch(function(data){
-                console.log(data);
-                alert("交易失败。",data);  
-            })}else{
-                alert("输入的密码不正确，请重新输入。");
-                console.log("密码错误❌失败");
-            }
+        var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
+        C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
+            $scope.getEthAccountInfo();
+            console.log(data);
+            alert("交易已提交！\n Txhash:"+"0x"+data.txhash);
+            $scope.showEthTransferFlag = false;
+            $scope.showEthAccountArea = true;
+            ethtransferObj = {};
+        }).then().catch(function(data){
+            console.log(data);
+            //alert("交易失败。",data);  
+        })
     }
     /**   发送coin ------------end-------------  **/
 
@@ -824,48 +824,43 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         var toAddr = "";
         var value = 0;
         var inputPassphrase = $scope.depContract.password;
-        var Pwd = $scope.myEthAccountInfo.passphrase;
+        //var Pwd = $scope.myEthAccountInfo.passphrase;
         var data = $scope.depContract.code;
         var gas = +$scope.depContract.gas||212100;
         var gasPrice = +$scope.depContract.gasPrice||1;
         var nonce = +$scope.myEthAccountInfo.nonce;
 
-        if(inputPassphrase == Pwd){
-            var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
-            C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
-                $scope.getEthAccountInfo();
-                console.log(data);
-                //alert("交易已提交！\n Txhash:"+data.txhash);
-                //var txhash = data.txhash；
-                console.log("交易已提交！\n Txhash:"+data.txhash);
-                $scope.showTransferFlag = false;
-                $scope.showAccountArea = true;
-                return C.getContractAddress(fromAddr,nonce);
-            }).then(function(data){
-                console.log("0x"+data);
-                var contractAddress = "0x"+data;
-                var contractABI = $scope.depContract.ABI;
-                var contractName = $scope.depContract.name;
-                alert("合约地址:\n"+contractAddress);
-                return sqlite3Obj.execute("INSERT INTO contract VALUES (?,?,?)",[contractName,contractAddress,contractABI]);
-            }).then(function(data){
-                if(data.result == "success"){
-                    $scope.initPage();
-                    alert('保存成功');
-                    $scope.showDeployArea = false;
-                    $scope.showContractArea = true;
-                    $scope.depContract = "";
-                    //$('#contractShow').modal('hide');
-                    //$scope.hideWatch();
-                }
-            }).then().catch(function(data){
-                console.log(data);
-                alert("交易失败。",data);  
-            })}else{
-                alert("输入的密码不正确，请重新输入。");
-                console.log("密码错误❌失败");
+        var pri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputPassphrase).toString(CryptoJS.enc.Utf8);
+        C.ethTranfer(pri,fromAddr,toAddr,value,nonce,gas,gasPrice,data).then(function(data){
+            $scope.getEthAccountInfo();
+            console.log(data);
+            //alert("交易已提交！\n Txhash:"+data.txhash);
+            //var txhash = data.txhash；
+            console.log("交易已提交！\n Txhash:"+data.txhash);
+            $scope.showTransferFlag = false;
+            $scope.showAccountArea = true;
+            return C.getContractAddress(fromAddr,nonce);
+        }).then(function(data){
+            console.log("0x"+data);
+            var contractAddress = "0x"+data;
+            var contractABI = $scope.depContract.ABI;
+            var contractName = $scope.depContract.name;
+            alert("合约地址:\n"+contractAddress);
+            return sqlite3Obj.execute("INSERT INTO contract VALUES (?,?,?)",[contractName,contractAddress,contractABI]);
+        }).then(function(data){
+            if(data.result == "success"){
+                $scope.initPage();
+                alert('保存成功');
+                $scope.showDeployArea = false;
+                $scope.showContractArea = true;
+                $scope.depContract = "";
+                //$('#contractShow').modal('hide');
+                //$scope.hideWatch();
             }
-
+        }).then().catch(function(data){
+            console.log(data);
+            //alert("交易失败。",data);  
+        })
     }
 
     /**   合约部署 ------------end-------------  **/
@@ -878,30 +873,31 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         console.log($scope.myEthAccountInfo);
         var ethaddr = $scope.myEthAccountInfo.address;
         var fromAddr = $scope.mortgageObj.from;
-        var inputPassphrase = $scope.mortgageObj.password;
-        var inputEthPassphrase = $scope.mortgageObj.ethpassword;
+        if($scope.isAccountPair==true){
+            var inputPassphrase = $scope.mortgageObj.password;
+            var inputEthPassphrase = $scope.mortgageObj.password;
+        }else{
+            var inputPassphrase = $scope.mortgageObj.password;
+            var inputEthPassphrase = $scope.mortgageObj.ethpassword;
+        }
         var value = +$scope.mortgageObj.amount;
-        var Pwd = $scope.myAccountInfo.passphrase;
+        //var Pwd = $scope.myAccountInfo.passphrase;
         var type = "mortgage";
         var gas = +$scope.mortgageObj.gas||212100;
         var gasPrice = +$scope.mortgageObj.gasPrice||1;
         var nonce = +$scope.myEthAccountInfo.nonce;
 
-        if(inputPassphrase == Pwd){
-            var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
-            var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
-            var type = "mortgage";
-            C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
-                $scope.getEthAccountInfo();
-                //console.log(data);
-                alert("交易已提交！\n Txhash:0x"+data);
-            }).then().catch(function(data){
-                console.log(data);
-                alert("交易失败。",data);  
-            })}else{
-                alert("输入的密码不正确，请重新输入。");
-                console.log("密码错误❌失败");
-            }
+        var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
+        var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
+        var type = "mortgage";
+        C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
+            $scope.getEthAccountInfo();
+            //console.log(data);
+            alert("交易已提交！\n Txhash:0x"+data);
+        }).then().catch(function(data){
+            console.log(data);
+            //alert("交易失败。",data);  
+        })
     }
 
     /**   抵押coin ------------end-------------  **/
@@ -914,30 +910,31 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         console.log($scope.myEthAccountInfo);
         var ethaddr = $scope.myEthAccountInfo.address;
         var fromAddr = $scope.redemptionObj.from;
-        var inputPassphrase = $scope.redemptionObj.password;
-        var inputEthPassphrase = $scope.redemptionObj.ethpassword;
+        if($scope.isAccountPair==true){
+            var inputPassphrase = $scope.redemptionObj.password;
+            var inputEthPassphrase = $scope.redemptionObj.password;
+        }else{
+            var inputPassphrase = $scope.redemptionObj.password;
+            var inputEthPassphrase = $scope.redemptionObj.ethpassword;
+        }
         var value = +$scope.redemptionObj.amount;
-        var Pwd = $scope.myAccountInfo.passphrase;
+        //var Pwd = $scope.myAccountInfo.passphrase;
         var type = "redemption";
         var gas = +$scope.redemptionObj.gas||212100;
         var gasPrice = +$scope.redemptionObj.gasPrice||1;
         var nonce = +$scope.myEthAccountInfo.nonce;
 
-        if(inputPassphrase == Pwd){
-            var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
-            var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
-            var type = "redemption";
-            C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
-                $scope.getEthAccountInfo();
-                //console.log(data);
-                alert("交易已提交！\n Txhash:0x"+data);
-            }).then().catch(function(data){
-                console.log(data);
-                alert("交易失败。",data);  
-            })}else{
-                alert("输入的密码不正确，请重新输入。");
-                console.log("密码错误❌失败");
-            }
+        var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
+        var pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,inputPassphrase).toString(CryptoJS.enc.Utf8);
+        var type = "redemption";
+        C.txMortgageorRedemption(type,ethaddr,ethpri,fromAddr,pri,value,nonce,gas,gasPrice).then(function(data){
+            $scope.getEthAccountInfo();
+            //console.log(data);
+            alert("交易已提交！\n Txhash:0x"+data);
+        }).then().catch(function(data){
+            console.log(data);
+            alert("交易失败。",data);  
+        })
     }
 
     /**   解押coin ------------end-------------  **/
@@ -1025,8 +1022,10 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         }
     }
 
-    $scope.showfunAreaQuery = function (type){
-        if (type ==1){
+    $scope.showfunAreaQuery = function (){
+        $scope.contractExec = 1;
+        $scope.contractQuery += 1;
+        if ($scope.contractQuery%2==0){
             $scope.funAreaQuery = true;
             $scope.funAreaTrade = false;
             $scope.funcInputs = 0;
@@ -1039,8 +1038,10 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         }
     }
 
-    $scope.showfunAreaTrade = function (type){
-        if (type ==1){
+    $scope.showfunAreaTrade = function (){
+        $scope.contractQuery = 1;
+        $scope.contractExec += 1;
+        if ($scope.contractExec%2==0){
             $scope.funAreaTrade = true;
             $scope.funAreaQuery = false;
             $scope.funcInputs = 0;
@@ -1078,6 +1079,13 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         $scope.showTransferFlag = true;
         $scope.showAccountArea = false;
         $scope.transferObj.from =  $scope.myAccountInfo.pubKey;
+        $scope.myEthAccountAddr = $scope.myAccountInfo.ethAddress;
+        if($scope.myAccountInfo.ethAddress==null){
+            $scope.isAccountPair = false;
+        }else{
+            $scope.getEthAccountInfo();
+            $scope.isAccountPair = true;
+        }
     }
 
     $scope.hideTransfer = function(){
@@ -1097,6 +1105,20 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         $scope.showEthAccountArea = true;
     }
 
+    $scope.showBackup = function(type){
+        if(type==1){
+
+        }else if(type==2){
+            $scope.showEthAccountArea = false;
+            $scope.showEthAccountBackupArea = true;
+        }
+    }
+
+    $scope.hideEthAccountBackupArea = function(){
+        $scope.showEthAccountBackupArea = false;
+        $scope.showEthAccountArea = true;
+    }
+
     $scope.setting = function(){
         $scope.showTranferSetting = true;
     }
@@ -1106,6 +1128,13 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         $scope.showMortgageFlag = true;
         $scope.showAccountArea = false;
         $scope.mortgageObj.from =  $scope.myAccountInfo.pubKey;
+        $scope.myEthAccountAddr = $scope.myAccountInfo.ethAddress;
+        if($scope.myAccountInfo.ethAddress==null){
+            $scope.isAccountPair = false;
+        }else{
+            $scope.getEthAccountInfo();
+            $scope.isAccountPair = true;
+        }
     }
 
     $scope.hideMortgage = function(){
@@ -1118,6 +1147,13 @@ app.controller('myCtrl',function($scope,$http,$timeout){
         $scope.showRedemptionFlag = true;
         $scope.showAccountArea = false;
         $scope.redemptionObj.from =  $scope.myAccountInfo.pubKey;
+        $scope.myEthAccountAddr = $scope.myAccountInfo.ethAddress;
+        if($scope.myAccountInfo.ethAddress==null){
+            $scope.isAccountPair = false;
+        }else{
+            $scope.getEthAccountInfo();
+            $scope.isAccountPair = true;
+        }
     }
 
     $scope.hideRedemption = function(){

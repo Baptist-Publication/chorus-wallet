@@ -27,10 +27,10 @@
             <div class="row mainContent">
                 <div class="col-md-12 col-sm-12 col-xs-12 bitPadding text-center">
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-primary" ng-click="showNewAccount()"><i class="icon-plus"></i>添加账户</button>
+                        <button class="btn btn-primary" ng-click="showNewAccount()">添加账户</button>
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-primary" ng-click="showServerSet()"><i class="icon-plus"></i>网络设置</button>
+                        <button class="btn btn-primary" ng-click="showServerSet()">网络设置</button>
                     </div>
                     <!-- <div class="col-md-6 col-sm-6 col-xs-6">
                         <button class="btn btn-primary" ng-click="showNewAsset()"><i class="icon-plus"></i>新增合约</button>
@@ -87,7 +87,7 @@
                     <div class="input-group" ng-show="accountSwitch">
                         <input type="password" class="form-control" placeholder="please set your account password" ng-model='accountPwd'>
                         <span class="input-group-btn">
-                            <button class="btn btn-primary" type="button" ng-click="createAccount()">生成CHOP账户</button>
+                            <button class="btn btn-primary" type="button" ng-click="createAccount()">生成CHOP账户对</button>
                         </span>
                         <input type="password" class="form-control" placeholder="please set your account password" ng-model='ethAccountPwd'>
                         <span class="input-group-btn">
@@ -113,12 +113,39 @@
 
                         <div class="panel panel-primary">
                             <div class="panel-heading">
+                                关联CHOE账户地址
+                            </div>
+                            <div class="panel-body"  >
+                                <pre> <code ng-bind="newAccountObj.relatedAddress"> </code>  </pre>
+                            </div>
+                        </div>
+
+                        <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    关联CHOE账户 Recover Phrase
+                                </div>
+                                <div class="panel-body"  >
+                                    <pre> <code ng-bind="newAccountObj.recoverPhrase"> </code>  </pre>
+                                </div>
+                            </div>
+
+                        <div class="panel panel-primary">
+                            <div class="panel-heading">
                                 CHOP账户私钥(AES加密)
                             </div>
                             <div class="panel-body"  >
-                                <pre> <code ng-bind="newAccountObj.private"> </code>  </pre>
+                                <pre> <code ng-bind="newAccountObj.chop_private"> </code>  </pre>
                             </div>
                         </div>
+
+                        <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    CHOE账户私钥(AES加密)
+                                </div>
+                                <div class="panel-body"  >
+                                    <pre> <code ng-bind="newAccountObj.choe_private"> </code>  </pre>
+                                </div>
+                            </div>
                     </div>
                     <div ng-show='newEthAccountArea' id='newEthAccountArea'>
                         <div class="panel panel-primary marginTop20">

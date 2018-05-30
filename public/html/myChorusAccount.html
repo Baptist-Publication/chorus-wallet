@@ -14,6 +14,7 @@
 	            </form>
 	        </div>
             <div class='text-right bitPadding' ng-show="myAccountInfo">
+                <button class='btn btn-primary' ng-click="showBackup(1)"><i></i>备份账户</button>                
                 <button class='btn btn-danger' ng-click="deleteAccount()"><span class='icon-trash'></span>删除CHOP账户</button>
             </div>
 	        <div class="panel-body" ng-show="myAccountInfo">
@@ -24,9 +25,9 @@
 					<tr>
 						<td>加密私钥地址(AES)</td><td ng-bind='myAccountInfo.privKey'></td>
 					</tr>
-					<!-- <tr>
-						<td>用户密码</td><td ng-bind='myAccountInfo.passphrase'></td>
-					</tr> -->
+					<tr>
+						<td>关联CHOE账户地址</td><td ng-bind='myAccountInfo.ethAddress'></td>
+					</tr>
 					<tr>
 						<td>账户余额</td><td ng-bind='myAccountInfo.balance'></td>
 					</tr>
@@ -69,7 +70,7 @@
                     </select>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOP账户密码
                 </div>
@@ -77,12 +78,20 @@
                     <input type='password' ng-model='transferObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOE账户密码
                 </div>
                 <div class='panel-body inputBody'>
                     <input type='password' ng-model='transferObj.ethpassword' class='form-control' placeholder='请输入账户密码'>
+                </div>
+            </div>
+            <div class='panel panel-default' ng-show='isAccountPair'>
+                <div class='panel-heading'>
+                    CHOP账户对密码
+                </div>
+                <div class='panel-body inputBody'>
+                    <input type='password' ng-model='transferObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
             <div class='panel panel-default'>
@@ -118,17 +127,6 @@
                      <input type='text' ng-model='transferObj.gasPrice' ng-click="showInputGasPrice(1)" class='form-control' placeholder='请输入您期望的gasPrice(默认值：1)' oninput="document.getElementById('gasPrice').innerHTML=this.value;" onpropertychange="document.getElementById('gasPrice').innerHTML=this.value;">
                     </div>
                 </div>
-                <!-- <div class='panel panel-default'>
-                    <div class='panel-heading'>
-                        data
-                    </div>
-                    <div class='panel-body inputBody'>
-                        <input type='text' ng-model='transferObj.data' class='form-control' placeholder='请输入您期望的data'>
-                    </div>
-                </div> -->
-                <!-- <div class='col-md-6 col-sm-6 col-xs-6 text-center'>
-                <button class='btn btn-primary' ng-click="calculate()" >确认</button>
-            </div> -->
             <br />  
             </div>
             <div class='panel panel-default'>
@@ -168,7 +166,7 @@
                     <!-- <input type='text' ng-model='transferObj.from' class='form-control' placeholder=''> -->
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' >
                 <div class='panel-heading'>
                     我的CHOE账户
                 </div>
@@ -177,7 +175,7 @@
                     </select>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOP账户密码
                 </div>
@@ -185,12 +183,20 @@
                     <input type='password' ng-model='mortgageObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOE账户密码
                 </div>
                 <div class='panel-body inputBody'>
                     <input type='password' ng-model='mortgageObj.ethpassword' class='form-control' placeholder='请输入账户密码'>
+                </div>
+            </div>
+            <div class='panel panel-default' ng-show='isAccountPair'>
+                <div class='panel-heading'>
+                    CHOP账户对密码
+                </div>
+                <div class='panel-body inputBody'>
+                    <input type='password' ng-model='mortgageObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
             <div class='panel panel-default'>
@@ -218,17 +224,6 @@
                      <input type='text' ng-model='mortgageObj.gasPrice' ng-click="showInputGasPrice(1)" class='form-control' placeholder='请输入您期望的gasPrice(默认值：1)' oninput="document.getElementById('gasPrice').innerHTML=this.value;" onpropertychange="document.getElementById('gasPrice').innerHTML=this.value;">
                     </div>
                 </div>
-                <!-- <div class='panel panel-default'>
-                    <div class='panel-heading'>
-                        data
-                    </div>
-                    <div class='panel-body inputBody'>
-                        <input type='text' ng-model='mortgageObj.data' class='form-control' placeholder='请输入您期望的data'>
-                    </div>
-                </div> -->
-                <!-- <div class='col-md-6 col-sm-6 col-xs-6 text-center'>
-                <button class='btn btn-primary' ng-click="calculate()" >确认</button>
-            </div> -->
             <br />  
             </div>
             <div class='panel panel-default'>
@@ -267,7 +262,7 @@
                     </select>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOP账户密码
                 </div>
@@ -275,12 +270,20 @@
                     <input type='password' ng-model='redemptionObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
-            <div class='panel panel-default'>
+            <div class='panel panel-default' ng-show='!isAccountPair'>
                 <div class='panel-heading'>
                     CHOE账户密码
                 </div>
                 <div class='panel-body inputBody'>
                     <input type='password' ng-model='redemptionObj.ethpassword' class='form-control' placeholder='请输入账户密码'>
+                </div>
+            </div>
+            <div class='panel panel-default' ng-show='isAccountPair'>
+                <div class='panel-heading'>
+                    CHOP账户对密码
+                </div>
+                <div class='panel-body inputBody'>
+                    <input type='password' ng-model='redemptionObj.password' class='form-control' placeholder='请输入账户密码'>
                 </div>
             </div>
             <div class='panel-body inputBody' ng-show="showTranferSetting">
