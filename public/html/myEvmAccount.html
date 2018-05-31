@@ -127,6 +127,19 @@
     </div>
     <div class="backup" ng-show="showEthAccountBackupArea">
         <button class="btn btn-warning bitMarginBottom" ng-click="hideEthAccountBackupArea()"><i class="icon-reply"></i>返回</button>
-    </div>
-		
+        <div class="clearfix"></div>
+        <h4 class='text-center bitMarginBottom'>CHOE账户备份</h4>
+        <div class="content">
+            <div class='panel-body inputBody padding10' >
+                <p class="label label-info" ng-bind="myEthAccountInfo.address"></span>
+            </div>
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon">账户密码</span>
+                <input type="password" class="form-control" ng-model="backUp.password" placeholder="请输入账户密码.">
+            </div>
+            <div class="text-center marginTop20">
+                <button class="btn btn-primary" ng-click="backUp(1)">备份</button>
+            </div>
+        </div>
+    </div>		
 </template>

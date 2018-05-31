@@ -1,6 +1,7 @@
 /**
  * Created by stig on 2017/3/31.
  */
+var fs = require('fs');
 var path = require('path');
 var cryptojs = require("cryptojs");
 var ethUtil = require("ethereumjs-util");
@@ -18,6 +19,9 @@ var secp256k1 = require('secp256k1');
 var sha256 = require("sha256");
 var request = require('request');
 var request_json = require('request-json');
+var pdfMake = require('pdfmake/build/pdfmake.js');
+var pdfFonts = require('pdfmake/build/vfs_fonts.js');
+pdfMake.vfs = pdfFonts.pdfMake.vfs;
 var nacl;
 require("js-nacl").instantiate(function (nacl_instance){
     nacl = nacl_instance;
@@ -414,6 +418,48 @@ obj.ethTranfer = function(privkey,from,to,value,nonce,gas,gasPrice,data){
 
         });
     }) 
+}
+
+obj.layoutPDF = function(type,data){
+    if(type=="secp"){
+        var docDefinition = { content: [
+            { text: 'CHORUS WALLET ACCOUNT BACKUP CARD', style: 'header' },"\n","\n",
+            { text: 'CHOE account:', style: 'header' },"\n","\n",
+            { text: 'address:', style: 'header' },
+            data.address,"\n",
+            { text: 'privKey:', style: 'header' },
+            data.secp_privKey,"\n",
+            { text: 'recoverPhrase:', style: 'header' },
+            data.recoverPhrase,"\n"
+        ] };
+    }else if(type=="ed"){
+
+    }else if(type=="pair"){
+        var docDefinition = { content: [
+            { text: 'CHORUS WALLET ACCOUNT BACKUP CARD', style: 'header' },"\n","\n",
+            { text: 'CHOE account:', style: 'header' },"\n","\n",
+            { text: 'address:', style: 'header' },
+            data.address,"\n",
+            { text: 'privKey:', style: 'header' },
+            data.secp_privKey,"\n",
+            { text: 'recoverPhrase:', style: 'header' },
+            data.recoverPhrase,"\n","\n",
+            { text: 'CHOP account:', style: 'header' },"\n","\n",
+            { text: 'pubKey:', style: 'header' },
+            data.pubKey,"\n",
+            { text: 'pubKey:', style: 'header' },
+            data.ed_privKey
+        ] }; 
+    }
+    
+    return new promise(function(resolve,reject){
+        try{
+            pdfMake.createPdf(docDefinition).download();
+            resolve("success");
+        }catch(err){
+            reject(err);
+        }
+    })
 }
 
 obj.contractInitArg = function(argArr){

@@ -2,7 +2,6 @@
 	<div class="myAccountArea" ng-show="showAccountArea">
         <!-- <a href="http://remix.ethereum.org/">http://remix.ethereum.org/</a> -->
 		<h4 class='text-center bitMarginBottom'>我的CHOP账户</h4>
-
 		<div class='panel panel-primary'>
 			<div class="panel-heading">
 	            <form class="form-horizontal formArea ">
@@ -303,17 +302,6 @@
                      <input type='text' ng-model='redemptionObj.gasPrice' ng-click="showInputGasPrice(1)" class='form-control' placeholder='请输入您期望的gasPrice(默认值：1)' oninput="document.getElementById('gasPrice').innerHTML=this.value;" onpropertychange="document.getElementById('gasPrice').innerHTML=this.value;">
                     </div>
                 </div>
-                <!-- <div class='panel panel-default'>
-                    <div class='panel-heading'>
-                        data
-                    </div>
-                    <div class='panel-body inputBody'>
-                        <input type='text' ng-model='redemptionObj.data' class='form-control' placeholder='请输入您期望的data'>
-                    </div>
-                </div> -->
-                <!-- <div class='col-md-6 col-sm-6 col-xs-6 text-center'>
-                <button class='btn btn-primary' ng-click="calculate()" >确认</button>
-            </div> -->
             <br />  
             </div>
             <div class='panel panel-default'>
@@ -335,8 +323,26 @@
             <div class='col-md-6 col-sm-6 col-xs-6 text-center'>
                 <button class='btn btn-primary' ng-click="setting()" >高级</button>
             </div>
-        </form>
-        
+        </form> 
     </div>
+    <div class="backup" ng-show="showChorusAccountBackupArea">
+        <button class="btn btn-warning bitMarginBottom" ng-click="hideChorusAccountBackupArea()"><i class="icon-reply"></i>返回</button>
+        <div class="clearfix"></div>
+        <h4 class='text-center bitMarginBottom'>CHOP账户备份</h4>
+        <div class="content">
+            <div class='panel-body inputBody padding10' >
+                <p class="label label-info" ng-bind="myAccountInfo.pubKey"></span>
+                <div class="clearfix"></div>
+                <p class="label label-info" ng-bind="myAccountInfo.ethAddress" ng-show="myAccountInfo.ethAddress"></span>
+            </div>
+            <div class="input-group input-group-lg">
+                <span class="input-group-addon">账户密码</span>
+                <input type="password" class="form-control" ng-model="backUp.password" placeholder="请输入账户密码.">
+            </div>
+            <div class="text-center marginTop20">
+                <button class="btn btn-primary" ng-click="backUp(2)">备份</button>
+            </div>
+        </div>
+    </div>	
 		
 </template>

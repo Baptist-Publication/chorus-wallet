@@ -111,16 +111,17 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.genKeypair($scope.accountPwd).then(function(kp_ed){
                 //console.log(kp_ed);
                 var privKey_ed_encrypt = CryptoJS.AES.encrypt(kp_ed.privkey,$scope.accountPwd).toString();
+                var privKey_secp_encrypt = 
                 global.kp_ed = kp_ed;
                 global.privKey_ed_encrypt = privKey_ed_encrypt;
-                return sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42))")
-            }).then(function(data){
-                if(data.result == "success")
-                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?)",[kp_ed.pubkey,privKey_ed_encrypt,newAccount.address]);
+                return sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42),ethPrivate char(128))")
             }).then(function(data){
                 if(data.result == "success")
                     var privKey_secp_encrypt = CryptoJS.AES.encrypt(getAccount.private,$scope.accountPwd).toString();
                     global.privKey_secp_encrypt = privKey_secp_encrypt;
+                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?,?)",[kp_ed.pubkey,privKey_ed_encrypt,newAccount.address,privKey_secp_encrypt]);
+            }).then(function(data){
+                if(data.result == "success")
                     return sqlite3Obj.execute("INSERT INTO user VALUES (?,?)",[newAccount.address,privKey_secp_encrypt])
             }).then(function(data){
                 if(data.result == "success")
@@ -187,6 +188,53 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     }
 
     /**  新账户 ------------end------------- **/
+
+    /**  备份账户 ------------start------------- **/
+
+    $scope.backUp = function(type){
+        if(type==1){
+            try {
+                decryptPri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,$scope.backUp.password).toString(CryptoJS.enc.Utf8);
+                if(decryptPri==""){
+                    alert("输入的密码错误，请重新输入。");
+                    $scope.backUp.password = "";
+                }else{
+                    var printData = {};
+                    var type = "secp";
+                    printData.address = $scope.myEthAccountInfo.address;
+                    printData.secp_privKey = decryptPri;
+                    printData.recoverPhrase = bip39.entropyToMnemonic(decryptPri);
+                    C.layoutPDF(type,printData);
+                }
+            }catch(err){
+                return err;
+            }
+        }else if(type==2){
+            console.log("in type 2");
+            $scope.myEthAccountAddr = $scope.myAccountInfo.ethAddress;
+            $scope.getEthAccountInfo();
+            decrypt_ed_Pri = CryptoJS.AES.decrypt($scope.myAccountInfo.privKey,$scope.backUp.password).toString(CryptoJS.enc.Utf8);
+            decrypt_secp_Pri = CryptoJS.AES.decrypt($scope.myAccountInfo.ethPrivate,$scope.backUp.password).toString(CryptoJS.enc.Utf8);
+            console.log(decrypt_ed_Pri);
+            console.log(decrypt_secp_Pri);
+            if(decrypt_ed_Pri==""||decrypt_secp_Pri==""){
+                alert("输入的密码错误，请重新输入。");
+                $scope.backUp.password = "";
+            }else{
+                var printData = {};
+                var type = "pair";
+                printData.address = $scope.myAccountInfo.ethAddress;
+                printData.secp_privKey = decrypt_secp_Pri;
+                printData.recoverPhrase = bip39.entropyToMnemonic(decrypt_secp_Pri);
+                printData.pubKey = $scope.myAccountInfo.pubKey;
+                printData.ed_privKey = decrypt_ed_Pri;
+                C.layoutPDF(type,printData);
+            }
+        }
+       
+    }
+
+    /**  备份账户 ------------end------------- **/
 
     /**  恢复账户   ------------start------------- **/
     $scope.recoverAccountArea = false;
@@ -1107,11 +1155,17 @@ app.controller('myCtrl',function($scope,$http,$timeout){
 
     $scope.showBackup = function(type){
         if(type==1){
-
+            $scope.showAccountArea = false;
+            $scope.showChorusAccountBackupArea = true;
         }else if(type==2){
             $scope.showEthAccountArea = false;
             $scope.showEthAccountBackupArea = true;
         }
+    }
+
+    $scope.hideChorusAccountBackupArea = function(){
+        $scope.showChorusAccountBackupArea = false;
+        $scope.showAccountArea = true;
     }
 
     $scope.hideEthAccountBackupArea = function(){

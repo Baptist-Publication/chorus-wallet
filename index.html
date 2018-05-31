@@ -64,7 +64,6 @@
                     <div class="input-group input-group-lg">
                         <span class="input-group-addon">节点地址</span>
                         <input type="text" class="form-control" ng-model="newIp.server" placeholder="请输入网络节点地址，包括端口号,例如:http://localhost:46657">
-                        <!-- <select  ng-model='newIp' class="form-control" ng-options='item for item in ipList'></select> -->
                         <select  ng-model='newIp' class="form-control" ng-options='obj.name for obj in ipList'></select>
                     </div>
                     <div class="text-center marginTop20">
@@ -251,19 +250,6 @@
                             </form>
                             <button class='btn btn-primary' ng-click='initDeploy()'>下一步</button>
                         </div>
-                        <!-- <div class='panel-body'>
-                            <select  ng-model='depFunObj' class="form-control" ng-options='obj.name for obj in depFunList' ng-change="selectDepFun()">
-                            </select>
-                        </div>
-                        <div class='panel-body'>
-                            <form>
-                                <div class="form-group" ng-repeat="item in depOutputs">
-                                    <label for="name">{{item.name}}</label>
-                                    <input type="text" ng-model="$parent.conf[$index]" class="form-control" placeholder="{{item.type}}">
-                                </div>
-                            </form>
-                            <button class='btn btn-primary' ng-click='next()'>下一步</button>
-                        </div> -->
                     </div>
                 </div>
             </div>
@@ -276,67 +262,6 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 class="modal-title" id="myModalLabel" >合约解析结果</h4>
                 </div>
-                <!-- <div class="modal-body">
-                    <div class='panel panel-default'>
-                        <div class='panel-heading'>
-                            合约函数(get)
-                        </div>
-                        <div class='panel-body'>
-                             <select  ng-model='getFunObj' class="form-control" ng-options='obj.name for obj in getFunList' ng-change="selectGetfun()">
-
-                            </select>
-                        </div>
-                    </div>
-                    <div class="modal-body">
-                    <div class='panel panel-default'>
-                        <div class='panel-heading'>
-                            合约函数(sent)
-                        </div>
-                        <div class='panel-body'>
-                             <select  ng-model='sentFunObj' class="form-control" ng-options='obj.name for obj in sentFunList' ng-change="selectSentfun()">
-                            </select>
-                        </div>
-                    </div> -->
-
-                    <!-- <div class='panel panel-default' ng-show="inputs.length > 0">
-                        <div class='panel-heading'>
-                            函数参数(get)
-                        </div>
-                        <div class='panel-body'>
-                            <form>
-                                <div class="form-group" ng-repeat="item in inputs">
-                                    <label for="name">{{item.name}}</label>
-                                    <input type="text" ng-model="$parent.conf[$index]" class="form-control" placeholder="{{item.type}}">
-                                </div>
-                            </form>
-                            <button class='btn btn-primary' ng-click='getValueByArgs()'>获取结果</button>
-
-                        </div>
-                    </div>
-
-                    <div class='panel panel-default'>
-                        <div class='panel-heading'>
-                            函数返回值,类型：{{getValType}}
-                        </div>
-                        <div class='panel-body inputBody padding10'>
-                            <table class='table table-bordered' ng-show="getValType == 'Array'">
-                                <tr ng-repeat="item in getVal ">
-                                    <td>{{$index}}</td>
-                                    <td ng-bind="item"></td>
-                                </tr>
-                            </table>
-
-                            <table class='table table-bordered' ng-show="getValType == 'object'">
-                                <tr ng-repeat="(key ,value) in getVal ">
-                                    <td ng-bind="key"></td>
-                                    <td ng-bind="value"></td>
-                                </tr>
-                            </table>
-                            <div class='' ng-show="getValType != 'Array' && getValType != 'object'">
-                                <p ng-bind="getVal" class="padding10"></p>
-                            </div>
-                        </div>
-                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-primary" ng-click="saveContract()">保存合约</button>
