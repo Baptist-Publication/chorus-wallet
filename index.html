@@ -79,11 +79,11 @@
                         <button class="btn btn-primary" ng-click="toggleAccount(1)"><i></i>创建账户</button>
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-6">
-                        <button class="btn btn-primary" ng-click="toggleAccount(2)"><i></i>恢复CHOE账户</button>
+                        <button class="btn btn-primary" ng-click="toggleAccount(2)"><i></i>恢复账户</button>
                     </div>
                 </div>
                 <div class="col-md-12 col-sm-12 col-xs-12 bitPadding divBorder">
-                    <div class="input-group" ng-show="accountSwitch">
+                    <div class="input-group" ng-show="showGenAccount">
                         <input type="password" class="form-control" placeholder="please set your account password" ng-model='accountPwd'>
                         <span class="input-group-btn">
                             <button class="btn btn-primary" type="button" ng-click="createAccount()">生成CHOP账户对</button>
@@ -93,11 +93,44 @@
                             <button class="btn btn-primary" type="button" ng-click="createEthAccount()">生成CHOE账户</button>
                         </span>
                     </div>
-                    <div class="input-group" ng-show="!accountSwitch">                        
+                    <div class="input-group" ng-show="showBackupAccount">
+                        <div class="bitPadding">
+                            <input type="radio" name="typeChoice" ng-value="0" ng-model="typeChoice" >恢复CHOE账户<br>
+                            <p>使用Recover Phrase恢复CHOE账户</p>
+                        </div>
+                        <div class="bitPadding">
+                            <input type="radio" name="typeChoice" ng-value="1" ng-model="typeChoice" >恢复CHOE账户<br>
+                            <p>使用CHOE账户私钥账户</p>
+                        </div>
+                        <div class="bitPadding">
+                            <input type="radio" name="typeChoice" ng-value="2" ng-model="typeChoice" >恢复CHOP账户<br>
+                            <p>使用CHOP账户私钥账户</p>
+                        </div> 
+                        <div class="row">
+                            <div class='col-md-6 col-sm-6 col-xs-6 text-center'>
+                                <button class='btn btn-info' ng-click="backUpNextStep()">下一步</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="input-group" ng-show="showCHOE_backup_1">                        
                         <input type="text" class="form-control" placeholder="please entry Recover Phrase" ng-model='recoverPhrase'>
-                        <input type="text" class="form-control" placeholder="please set password for your recovery account" ng-model='accountPasswd'>
+                        <input type="password" class="form-control" placeholder="please set password for your recovery account" ng-model='accountPasswd'>
                         <span class="input-group-btn">
-                            <button class="btn btn-primary" type="button" ng-click="recoverAccount()">恢复CHOE账户</button>
+                            <button class="btn btn-primary" type="button" ng-click="recoverAccount_CHOE_RP()">恢复CHOE账户</button>
+                        </span>
+                    </div>
+                    <div class="input-group" ng-show="showCHOE_backup_2">                        
+                        <input type="text" class="form-control" placeholder="please entry CHOE privateKey" ng-model='eth_privateKey'>
+                        <input type="password" class="form-control" placeholder="please set password for your recovery account" ng-model='accountPasswd'>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" ng-click="recoverAccount_CHOE_PK()">恢复CHOE账户</button>
+                        </span>
+                    </div>
+                    <div class="input-group" ng-show="showCHOP_backup">                        
+                        <input type="text" class="form-control" placeholder="please entry CHOP privateKey" ng-model='chorus_privateKey'>
+                        <input type="password" class="form-control" placeholder="please set password for your recovery account" ng-model='accountPasswd'>
+                        <span class="input-group-btn">
+                            <button class="btn btn-primary" type="button" ng-click="recoverAccount_CHOP_PK()">恢复CHOP账户</button>
                         </span>
                     </div>
                     <div ng-show='newAccountArea' id='newAccountArea'>

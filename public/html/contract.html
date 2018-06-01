@@ -34,9 +34,6 @@
 					<tr>
 						<td>合约地址</td><td ng-bind='myContract.address'></td>
 					</tr>
-					<!-- <tr>
-						<td>合约ABI</td><td ng-bind='myContract.abi'></td>
-					</tr> -->
 				</table>
 				<div class="selectmode" ng-show="myContract">
                     <div class="col-md-12 col-sm-12 col-xs-12 bitPadding text-center">
@@ -88,14 +85,6 @@
 	                    	</select>
                         </div>
                     </div>
-                    <!-- <div class='panel panel-default'>
-                        <div class='panel-heading'>
-                            密码
-                        </div>
-                        <div class='panel-body inputBody'>
-                            <input type='password' ng-model='inputPwd' class='form-control' placeholder='请输账户密码'>
-                        </div>
-                    </div> -->
                     <div class="text-right bitPadding">
                     	<button class='btn btn-primary' ng-click='queryContract()'>查询</button>
                     </div>

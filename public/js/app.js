@@ -111,7 +111,6 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             C.genKeypair($scope.accountPwd).then(function(kp_ed){
                 //console.log(kp_ed);
                 var privKey_ed_encrypt = CryptoJS.AES.encrypt(kp_ed.privkey,$scope.accountPwd).toString();
-                var privKey_secp_encrypt = 
                 global.kp_ed = kp_ed;
                 global.privKey_ed_encrypt = privKey_ed_encrypt;
                 return sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42),ethPrivate char(128))")
@@ -161,12 +160,12 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             console.log(newAccount);
             console.log(getAccount);
 
-            var usrinfoArray = new Array();
+            var userinfoArray = new Array();
 
             /*---新建数据库。密码、加密私钥、地址存入数据库---*/
-            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS user (address char(42),private char(128),passphrase char)").then(function (data) {
+            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS user (address char(42),private char(128))").then(function (data) {
                 if(data.result == "success")
-                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?,?)",[newAccount.address,newAccount.private,$scope.ethAccountPwd]);
+                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?)",[newAccount.address,newAccount.private]);
             }).then(function (data){
                 console.log(data);
                 if(data.result == "success"){
@@ -239,7 +238,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     /**  恢复账户   ------------start------------- **/
     $scope.recoverAccountArea = false;
 
-    $scope.recoverAccount = function(){
+    $scope.recoverAccount_CHOE_RP = function(){
         $scope.refresh();
         if($scope.recoverPhrase == "" && $scope.accountPasswd == ""){
             alert('请输入账户助记词或密码');
@@ -253,16 +252,16 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             var recoverAccount = new Array();
             recoverAccount.address = recoverAccountAddress;
             recoverAccount.private = usrEncryptPrivate;
-            var usrinfoArray = new Array();
+            //var usrinfoArray = new Array();
 
             /*---将恢复的账户存入数据库---*/
-            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS user (address char(42),private char(128),passphrase char)").then(function (data){
+            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS user (address char(42),private char(128))").then(function (data){
                 if(data.result == "success"){
                     var module = '!'+usrEncryptPrivate;
                     console.log(module);
                     var private = module.replace("!","");
                     console.log(private);
-                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?,?)",[recoverAccountAddress,private,Pwd]);
+                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?)",[recoverAccount.address,recoverAccount.private]);
                 }
             }).then(function (data){
                 if(data.result == "success"){
@@ -270,13 +269,95 @@ app.controller('myCtrl',function($scope,$http,$timeout){
                     $scope.recoverAccountObj = recoverAccount;
                     $scope.EthaccountList.push(recoverAccount);
                     $scope.recoverAccountArea = true;
-                    jQuery('#recoverAccountArea').show();
+                    //jQuery('#recoverAccountArea').show();
                     console.log($scope.EthaccountList);
                     $scope.refresh();
                 }
             }).then().catch(function (err){
                 console.log('err = '+err);
             });
+        }
+    }
+
+    $scope.recoverAccount_CHOE_PK = function(){
+        $scope.refresh();
+        if($scope.eth_privateKey == "" && $scope.accountPasswd == ""){
+            alert('请输入账户私钥或密码');
+        }else{
+            var Accounts = new ethAccounts();
+            var recoverAccountPrivate = $scope.eth_privateKey;
+            var recoverAccountAddress = Accounts.re(recoverAccountPrivate);
+            var Pwd = $scope.accountPasswd;
+            var usrEncryptPrivate = CryptoJS.AES.encrypt(recoverAccountPrivate,Pwd);
+            var recoverAccount = new Array();
+            recoverAccount.address = recoverAccountAddress;
+            recoverAccount.private = usrEncryptPrivate;
+            //var usrinfoArray = new Array();
+
+            /*---将恢复的账户存入数据库---*/
+            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS user (address char(42),private char(128))").then(function (data){
+                if(data.result == "success"){
+                    var module = '!'+usrEncryptPrivate;
+                    console.log(module);
+                    var private = module.replace("!","");
+                    console.log(private);
+                    return sqlite3Obj.execute("INSERT INTO user VALUES (?,?)",[recoverAccount.address,recoverAccount.private]);
+                }
+            }).then(function (data){
+                if(data.result == "success"){
+                    console.log("in success");
+                    $scope.recoverAccountObj = recoverAccount;
+                    $scope.EthaccountList.push(recoverAccount);
+                    $scope.recoverAccountArea = true;
+                    //jQuery('#recoverAccountArea').show();
+                    console.log($scope.EthaccountList);
+                    $scope.refresh();
+                }
+            }).then().catch(function (err){
+                console.log('err = '+err);
+            });
+        }
+    }
+
+    $scope.recoverAccount_CHOP_PK = function(){
+        $scope.refresh();
+        if($scope.chorus_privateKey == "" && $scope.accountPasswd == ""){
+            alert('请输入账户私钥或密码');
+        }else{
+            var pri = $scope.chorus_privateKey;
+            var pubKey = $scope.chorus_privateKey.slice(64,128);
+            var usrEncryptPrivate = CryptoJS.AES.encrypt($scope.chorus_privateKey,$scope.accountPasswd);
+            usrEncryptPrivate = '!'+usrEncryptPrivate;
+            usrEncryptPrivate = usrEncryptPrivate.replace("!","");
+            //console.log(usrEncryptPrivate);
+            var recoverCHORUSAccount = new Array();
+            recoverCHORUSAccount.address = pubKey;
+            recoverCHORUSAccount.private = usrEncryptPrivate;
+            //var usrinfoArray = new Array();
+
+            sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42),ethPrivate char(128))").then(function(data){
+                if(data.result=="success"){
+                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?,?)",[recoverCHORUSAccount.address,recoverCHORUSAccount.private,"",""]);
+                }
+            }).then(function(data){
+                if(data.result=="success"){
+                    console.log("in success");
+                    $scope.recoverAccountObj = recoverCHORUSAccount;
+                    var accountObj = {};
+                    accountObj.pubKey = recoverCHORUSAccount.address;
+                    //console.log(account.pubKey);
+                    accountObj.privKey = recoverCHORUSAccount.private;
+                    $scope.accountList.push(accountObj);
+                    $scope.recoverAccountArea = true;
+                    //jQuery('#recoverAccountArea').show();
+                    console.log($scope.accountList);
+                    $scope.refresh();
+                }
+            }).then().catch(function (err){
+                console.log('err = '+err);
+            });
+
+            
         }
     }
     /**  恢复账户   ------------end------------- **/    
@@ -1045,11 +1126,38 @@ app.controller('myCtrl',function($scope,$http,$timeout){
     $scope.toggleAccount = function (type) {
         
         if (type == 1){
-            $scope.accountSwitch = true;
+            $scope.showGenAccount = true;
+            $scope.showBackupAccount = false;
         }else if (type == 2){
-            $scope.accountSwitch = false;
+            $scope.showGenAccount = false;
+            $scope.showBackupAccount = true;
+            $scope.showCHOE_backup_1 = false;
+            $scope.showCHOE_backup_2 = false;
+            $scope.showCHOP_backup = false;
         }
     
+    }
+
+    $scope.backUpNextStep = function(){
+        if($scope.typeChoice==0){
+            $scope.showCHOE_backup_1= true;
+            $scope.showCHOE_backup_2= false;
+            $scope.showCHOP_backup= false;
+            $scope.showGenAccount = false;
+            $scope.showBackupAccount = false;
+        }else if($scope.typeChoice==1){
+            $scope.showCHOE_backup_2= true;
+            $scope.showCHOE_backup_1= false;
+            $scope.showCHOP_backup= false;
+            $scope.showGenAccount = false;
+            $scope.showBackupAccount = false;
+        }else if($scope.typeChoice==2){
+            $scope.showCHOP_backup= true;
+            $scope.showCHOE_backup_1= false;
+            $scope.showCHOE_backup_2= false;
+            $scope.showGenAccount = false;
+            $scope.showBackupAccount = false;
+        }
     }
 
     //$scope.SelectMode = false;
