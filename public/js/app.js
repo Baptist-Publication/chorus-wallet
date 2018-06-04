@@ -337,7 +337,7 @@ app.controller('myCtrl',function($scope,$http,$timeout){
 
             sqlite3Obj.createTable("CREATE TABLE  IF NOT EXISTS usr (pubKey char(64),privKey char(216),ethAddress char(42),ethPrivate char(128))").then(function(data){
                 if(data.result=="success"){
-                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?,?)",[recoverCHORUSAccount.address,recoverCHORUSAccount.private,"",""]);
+                    return sqlite3Obj.execute("INSERT INTO usr VALUES (?,?,?,?)",[recoverCHORUSAccount.address,recoverCHORUSAccount.private,null,null]);
                 }
             }).then(function(data){
                 if(data.result=="success"){
