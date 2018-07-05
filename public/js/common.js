@@ -10,7 +10,6 @@ var promise = require('bluebird');
 var Tx = require('ethereumjs-tx');
 //var SolidityFunction = require('web3/lib/web3/function');
 var _ = require('lodash');
-var promise = require("bluebird");
 var child_process = require("child_process");
 var ed = require('./lib/js-crypto/src');
 var hex = require('./lib/js-crypto/src/hex');
@@ -493,13 +492,6 @@ obj.getBlockInfo = function(blockNumber){
             console.log(JSONbody);
             resolve(JSONbody);
         })
-        // httpModule.get(url,function(data){
-        //     console.log(data);
-        //     resolve(data);
-        // },function(err){
-        //     console.log(err);
-        //     reject(err);
-        // });
     });
 }
 
@@ -683,141 +675,10 @@ obj.getPayLoad = function (abi,funName,paramArr) {
     return payloadData;
 }
 
-
-
-obj.sendEtherUsePrivateKey = function(fromAddr,toAddr,amount,secret,gas,gasPrice,inputData,callback){
-    return new promise(function (resolve,reject) {
-        if(gas){
-            var gasLimitHex = web3.toHex(gas);
-        }else{
-            var gasLimitHex = web3.toHex(4712388);
-        }
-        if(gasPrice){
-            var gasPriceHex = web3.toHex(gasPrice);
-        }else{
-            const gasprice = Number(web3.eth.gasPrice);
-            var gasPriceHex = web3.toHex(gasprice);
-        }
-        if(inputData){
-            var front = inputData.substring(0,2);
-            if(front == "0x"){
-                var txData = inputData;
-            }else{
-                var txData = "0x"+inputData;
-            }
-        }else{
-            var txData = "0x";
-        }
-        var nonceHex = Number(web3.eth.getTransactionCount(fromAddr));
-        var value = web3.toWei(amount, 'ether');
-        var valueHex = web3.toHex(value);
-        //console.log(value);
-        //console.log(gasPrice);
-        var test = gasPrice*291104+value;
-            if (typeof nonceAddrMap[fromAddr] === 'undefined') {
-            nonceAddrMap[fromAddr] = nonceHex;
-            // console.log("type of nonceAddrMap[fromAddr] is " + typeof nonceAddrMap[fromAddr] );
-            } else if(nonceHex <= nonceAddrMap[fromAddr] ) {
-            nonceHex = nonceAddrMap[fromAddr] + 1;
-            nonceAddrMap[fromAddr] = nonceHex;
-            // console.log("nonceHex = " + nonceAddrMap[fromAddr]);
-            }else {
-            nonceAddrMap[fromAddr] = nonceHex;
-            }
-        //var txData = "0x";
-        console.log(txData);
-        var rawTx = {
-            nonce: nonceHex,
-            gasPrice: gasPriceHex,
-            gasLimit: gasLimitHex,
-            to: toAddr,
-            from: fromAddr,
-            value: valueHex,
-            data: txData
-        };
-    
-        var tx = new Tx(rawTx);
-        var privateKey = new Buffer(secret, 'hex');
-        tx.sign(privateKey);
-        var serializedTx = tx.serialize();
-        //console.log(serializedTx);
-        web3.eth.sendRawTransaction("0x"+serializedTx.toString('hex'),function(err,data){
-            if(!err){
-                    //console.log(data);
-                    resolve(data);
-                    /*
-                    var receipt = web3.eth.getTransactionReceipt(data);
-                    console.log(receipt);
-                    */
-                }else{
-                    reject(err);
-                }
-        });
-    
-   });   
-}
-
-obj.sendTxUsePrivateKey = function (funData,pri,addr,contractAddr) {
-
-    return new promise(function (resolve,reject) {
-        //console.log(pri);
-        var privateKey = new Buffer(pri, 'hex');
-        var address = "0x"+addr;
-
-        //定义合约的tx数据
-        const gasPrice = Number(web3.eth.gasPrice);
-        var nonceHex = Number(web3.eth.getTransactionCount(address));
-        if (typeof nonceAddrMap[address] === 'undefined') {
-        nonceAddrMap[address] = nonceHex;
-        // console.log("type of nonceAddrMap[address] is " + typeof nonceAddrMap[address] );
-        } else if(nonceHex <= nonceAddrMap[address] ) {
-        nonceHex = nonceAddrMap[address] + 1;
-        nonceAddrMap[address] = nonceHex;
-        // console.log("nonceHex = " + nonceAddrMap[address]);
-        }else {
-        nonceAddrMap[address] = nonceHex;
-        }   
-
-        const rawTx = {
-            nonce: nonceHex,
-            gasPrice: gasPrice,
-            gasLimit: "0x2000000",
-            to:contractAddr,
-            data:funData
-        };
-        console.log('nonce'+rawTx.nonce);
-
-        /* 私钥签名 ---------start--------------*/
-        const tx = new Tx(rawTx);
-        tx.sign(privateKey);
-        const serializedTx = tx.serialize();
-
-        /* 发送交易 ---------start--------------*/
-        web3.eth.sendRawTransaction(serializedTx.toString('hex'), function (err,data) {
-            if(!err){
-                console.log('私钥发送交易');
-                console.log('交易哈希');
-                console.log(data);
-                resolve(data);
-                /*
-                var receipt = web3.eth.getTransactionReceipt(data);
-                console.log(receipt);
-                */
-            }else{
-                console.log("私钥交易错误");
-                alert("交易失败！");
-                reject(err);
-            }
-        });
-    });
-}
-
 obj.cmdWord = function(){
     var a = "👏欢迎使用chorus wallet控制台。键入‘help’以获取命令帮助，键入‘clear’以清除屏幕。Type ‘help’ for an overview of available commands.";
     return a ;
 }
-
-
 
 class BlockTxwithoutsig {
   constructor (data) {

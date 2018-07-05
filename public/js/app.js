@@ -899,8 +899,8 @@ app.controller('myCtrl',function($scope,$http,$timeout){
             var inputEthPassphrase = $scope.transferObj.ethpassword;
         }
         //var Pwd = $scope.myAccountInfo.passphrase;
-        var gas = +$scope.transferObj.gas||212100;
-        var gasPrice = +$scope.transferObj.gasPrice||1;
+        var gas = +$scope.transferObj.gas || 212100;
+        var gasPrice = +$scope.transferObj.gasPrice || 1;
         var nonce = +$scope.myEthAccountInfo.nonce;
 
         var ethpri = CryptoJS.AES.decrypt($scope.myEthAccountInfo.private,inputEthPassphrase).toString(CryptoJS.enc.Utf8);
