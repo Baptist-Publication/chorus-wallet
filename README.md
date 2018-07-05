@@ -1,4 +1,4 @@
-#chorus wallet
+# chorus wallet
 ## Introduction
 ----------
 This repository is the client-wallet for chorus blockchain.
