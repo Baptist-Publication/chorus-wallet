@@ -1,10 +1,11 @@
 # chorus wallet
+
 ## Introduction
 
 This repository is the client-wallet for chorus blockchain.
 
 Please note that this repository is the Electron host .
----------- 
+
 ## how to use
 
 1、install node.js
