@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>wallet</title>
+    <link rel="stylesheet" href="public/css/lib/zarm-vue.default.css">
     <link rel="stylesheet" href="public/css/lib/bootstrap.min.css">
     <link rel="stylesheet" href="public/css/lib/font-awesome.min.css">
     <link rel="stylesheet" href="public/css/style.css">
@@ -27,9 +28,11 @@
             <div class="row mainContent">
                 <div class="col-md-12 col-sm-12 col-xs-12 bitPadding text-center">
                     <div class="col-md-6 col-sm-6 col-xs-6">
+                        <za-button theme="primary" shape="round" ng-click="showNewAccount()">添加账户</za-button>
                         <button class="btn btn-primary" ng-click="showNewAccount()">添加账户</button>
                     </div>
                     <div class="col-md-6 col-sm-6 col-xs-6">
+                        <za-button shape="round" theme="warning" ng-click="showServerSet()">网络设置</za-button>
                         <button class="btn btn-primary" ng-click="showServerSet()">网络设置</button>
                     </div>
                 </div>
@@ -302,6 +305,8 @@
     <script>
         window.$ = window.jQuery = require('./public/js/lib/jquery-2.1.4.min.js')
         require('./public/js/lib/angular.min.js');
+        require('./public/js/lib//vue.min.js');
+        require('./public/js/lib//zarm-vue.umd.js');
         require('./public/js/lib/bootstrap.min.js');
         require('./public/js/menu.js');
         require('./public/js/common.js');
